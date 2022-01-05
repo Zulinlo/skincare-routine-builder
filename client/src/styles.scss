@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap');
+
+@media only screen and (min-width: 100px) {
+  html {
+    font-size: 75%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  html {
+    font-size: 100%;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  html {
+    font-size: 125%;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arimo", sans-serif;
+  color: white;
+  background-color: #4BA6AB;
+}

@@ -98,14 +98,14 @@ const productSchema = new mongoose.Schema({
   },
   step: {
     type: String,
-    required: [true, "Step is required"],
+    required: [true, "Step is required."],
     enum: {
       values: [
         "cleanser",
         "oilCleanser",
         "exfoliant",
         "toner",
-        "serum",
+        "serumEssence",
         "moisturiser",
         "mask",
         "eyeTreatment",
@@ -116,7 +116,7 @@ const productSchema = new mongoose.Schema({
   },
   skinType: {
     type: String,
-    required: [true, "Skin type is required"],
+    required: [true, "Skin type is required."],
     enum: {
       values: ["normal", "dry", "oily", "combination", "sensitive"],
       message: "Skin type is not valid.",
@@ -124,11 +124,15 @@ const productSchema = new mongoose.Schema({
   },
   averageReview: {
     type: Number,
-    required: [true, "Average review is required"],
+    required: [true, "Average review is required."],
   },
   numberOfReviews: {
     type: Number,
-    required: [true, "Number of reviews is required"],
+    required: [true, "Number of reviews is required."],
+  },
+  isSensitive: {
+    type: Boolean,
+    required: [true, "Sensitivity is required."],
   },
 });
 

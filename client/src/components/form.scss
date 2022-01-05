@@ -1,0 +1,73 @@
+.form-logo {
+  transition: 0.3s ease-in-out;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.form {
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  width: 70%;
+  display: flex;
+  flex-flow: column wrap;
+
+  h1 {
+    font-size: 3.8rem;
+    font-weight: 700;
+  }
+
+  .form-register {
+    font-size: 1.1rem;
+    margin-top: 1.5%;
+    margin-bottom: 1%;
+  }
+
+  .form-forgot-password {
+    font-size: 0.8rem;
+    margin-top: 1%;
+  }
+
+  .form-input {
+    margin-top: 2%;
+    color: #E9E9E9;
+
+    span {
+      font-size: 1.1rem;
+      margin: 2% 1px;
+    }
+
+    input {
+      display: block;
+      outline: none;
+      border: none;
+      background: #E9E9E9;
+      border-radius: 8px;
+      width: 25%;
+      height: 2rem;
+      font-size: 1rem;
+      padding: 5px;
+      margin-top: 5px;
+    }
+  }
+
+  .form-submit {
+    background: #2B464D;
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 15px;
+    width: 30%;
+    padding: 20px 30px;
+    text-align: center;
+    margin-top: 3%;
+
+    &:hover {
+      cursor: pointer;
+      opacity: 0.9;
+    }
+  }
+}

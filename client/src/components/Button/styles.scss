@@ -1,0 +1,14 @@
+.button {
+  display: inline-block;
+  font-size: 1rem;
+  padding: 15px 25px;
+  color: white;
+  background-color: black;
+  border-radius: 10px;
+  text-decoration: none;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.9;
+  }
+}

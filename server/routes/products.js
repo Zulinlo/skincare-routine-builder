@@ -14,7 +14,7 @@ router
   .post(async (req, res) => {
     const {
       name,
-      imagePath = new mongoose.Types.ObjectId(),
+      imagePath,
       brand,
       price,
       description,
@@ -23,14 +23,18 @@ router
       ingredients,
       step,
       skinType,
-      averageReview = 5,
-      numberOfReviews = 0,
+      averageReview,
+      numberOfReviews,
+      isSensitive = false,
     } = req.body;
 
     const isExists = await Product.exists({
       name,
     });
     if (isExists) return res.status(400).json(`Product already exists.`);
+
+    if (!ingredients || !ingredients[0].trim())
+      return res.status(400).json(`No ingredients list.`);
 
     const _id = new mongoose.Types.ObjectId();
     const newProduct = new Product({
@@ -47,13 +51,14 @@ router
       skinType,
       averageReview,
       numberOfReviews,
+      isSensitive,
     });
 
     newProduct
       .save()
       .then((result) => {
         console.log(`Product added!\n${result}`);
-        return res.status(200).json({ _id });
+        return res.status(200).json({ _id, imagePath });
       })
       .catch((err) => {
         console.log(`Failed to add product.\n${err}`);
