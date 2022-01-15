@@ -18,7 +18,7 @@ const Home = () => {
           <div className="main-description-text">
             Receive tailored product reccomendations as you build your routine.
             <br />
-            <Button link="/register" backgroundColor="#5B5B5B" marginTop="1rem">
+            <Button link="/register" backgroundColor="#29434B" marginTop="1rem">
               Get Started
             </Button>
           </div>

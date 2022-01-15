@@ -52,7 +52,7 @@ const Navbar = () => {
             Login
           </Link>
         </div>
-        <Button backgroundColor="#5B5B5B" link="/register">
+        <Button backgroundColor="#29434B" link="/register">
           Get Started
         </Button>
       </div>
