@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsPlus } from "react-icons/bs";
-import { ReactComponent as Logo } from "utils/favicon.svg";
 import { AiFillCaretRight } from "react-icons/ai";
+
+import { ReactComponent as Logo } from "utils/favicon.svg";
+import { useAuth } from "contexts/AuthContext";
 import Button from "components/Button";
 
 import "./styles.scss";
@@ -11,6 +13,9 @@ const RoutineBuilder = () => {
   const [isRoutineDay, setIsRoutineDay] = useState(true);
   const [routineItems, setRoutineItems] = useState([]);
   const [newItem, setNewItem] = useState(null);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { currentUser, logout } = useAuth();
 
   const toggleRoutine = () => {
     setIsRoutineDay(!isRoutineDay);
@@ -58,7 +63,6 @@ const RoutineBuilder = () => {
     "Eye Care",
     "Sunscreen",
   ];
-
   const concerns = [
     "Hydration",
     "Acne",
@@ -66,12 +70,19 @@ const RoutineBuilder = () => {
     "Irritation",
     "Ageing",
   ];
-
   const skinTypes = ["Dry", "Oily", "Combination", "Normal"];
-
   const activeButtons = useRef([null, null]);
 
-  console.log(activeButtons);
+  const handleLogout = async () => {
+    setError("");
+
+    try {
+      await logout();
+      navigate("/");
+    } catch {
+      setError("Failed to log out");
+    }
+  }
 
   return (
     <div className="routine-body">
@@ -88,7 +99,7 @@ const RoutineBuilder = () => {
           <span>{(isRoutineDay ? "Day" : "Night") + " Routine"}</span>{" "}
           <AiFillCaretRight size="1rem" className="navbar-routine-caret" />
         </span>
-        <Button backgroundColor="#2B464D" color="#FFF">
+        <Button backgroundColor="#2B464D" color="#FFF" onClick={handleLogout}>
           Log out
         </Button>
       </nav>

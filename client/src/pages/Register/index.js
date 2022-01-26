@@ -1,11 +1,43 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { ReactComponent as Logo } from "utils/favicon.svg";
+import { useAuth } from "contexts/AuthContext";
 
 import "components/form.scss";
 import "./styles.scss";
 
-import { ReactComponent as Logo } from "utils/favicon.svg";
-
 const Register = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [skinType, setSkinType] = useState("normal");
+  const [isSensitive, setIsSensitive] = useState("no");
+  const [startingTemplate, setStartingTemplate] = useState("simple");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      return setError("Passwords do not match");
+    }
+
+    try {
+      setError("");
+      setLoading(true);
+      await register(email, password);
+      return navigate("/routine-builder");
+    } catch {
+      setError("Failed to create an account");
+    }
+
+    setLoading(false);
+  }
+
   return (
     <>
       <Link to="/">
@@ -16,29 +48,29 @@ const Register = () => {
           style={{ position: "absolute", top: "35px", left: "35px" }}
         />
       </Link>
-      <div className="form">
+      <form className="form" onSubmit={handleSubmit}>
         <h1>Let's create an account!</h1>
         <span className="form-register">
           Build the perfect routine with us for you.
         </span>
         <div className="form-input">
           <span>Email</span>
-          <input type="text" />
+          <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
         <div className="form-input">
           <span>Password</span>
-          <input type="password" />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         <div className="form-input">
           <span>Confirm password</span>
-          <input type="text" />
+          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
         </div>
         <div className="form-input-two">
           <div className="form-input" style={{ width: "50%" }}>
             <span>Skin type</span>
-            <select>
+            <select value={skinType} onChange={(e) => setSkinType(e.target.value)}>
               <option value="dry">Dry</option>
-              <option value="normal" selected>
+              <option value="normal">
                 Normal
               </option>
               <option value="oily">Oily</option>
@@ -47,9 +79,9 @@ const Register = () => {
           </div>
           <div className="form-input">
             <span>Sensitive skin</span>
-            <select style={{ width: "60%" }}>
+            <select style={{ width: "60%" }} value={isSensitive} onChange={(e) => setIsSensitive(e.target.value)}>
               <option value="yes">Yes</option>
-              <option selected value="no">
+              <option value="no">
                 No
               </option>
             </select>
@@ -57,16 +89,16 @@ const Register = () => {
         </div>
         <div className="form-input">
           <span>Pick a starting routine template</span>
-          <select style={{ width: "30%", marginTop: "1%" }}>
-            <option selected value="simple">
+          <select style={{ width: "30%", marginTop: "1%" }} value={startingTemplate} onChange={(e) => setStartingTemplate(e.target.value)}>
+            <option value="simple">
               Simple
             </option>
-            <option selected value="complex">
+            <option value="complex">
               Complex
             </option>
           </select>
         </div>
-        <input type="button" className="form-submit" value="Continue" />
+        <button type="submit" className="form-submit">Continue</button>
         <span className="form-forgot-password">
           Already registered?{" "}
           <Link
@@ -76,7 +108,8 @@ const Register = () => {
             Click here
           </Link>
         </span>
-      </div>
+        {error && <span className="error">{error}</span>}
+      </form>
     </>
   );
 };

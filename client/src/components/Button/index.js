@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 
 import "./styles.scss";
 
-const Button = ({ link, children, ...styles }) => {
+const Button = ({ link, children, onClick, ...styles }) => {
   return link === "" ? (
-    <div className="button" style={styles}>
+    <div className="button" style={styles} onClick={onClick}>
       {children}
     </div>
   ) : (
