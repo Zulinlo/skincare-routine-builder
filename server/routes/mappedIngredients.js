@@ -2,25 +2,25 @@ import express from "express";
 
 import mongoose from "mongoose";
 
-import { Ingredient } from "../models.js";
+import { IngredientMapped } from "../models.js";
 
 const router = express.Router();
 
 router
   .route("/")
   .get((req, res) => {
-    res.json("All ingredients list.");
+    res.json("All mapped ingredients list.");
   })
   .post(async (req, res) => {
     const { name, rating, description, purpose } = req.body;
 
-    const isExists = await Ingredient.exists({
+    const isExists = await IngredientMapped.exists({
       name,
     });
     if (isExists) return res.status(400).json(`Ingredient already exists.`);
 
     const _id = new mongoose.Types.ObjectId();
-    const newIngredient = new Ingredient({
+    const newIngredient = new IngredientMapped({
       _id,
       name,
       rating,

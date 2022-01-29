@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 import ingredientsRouter from "./routes/ingredients.js";
+import mappedIngredientsRouter from "./routes/mappedIngredients.js";
 import productsRouter from "./routes/products.js";
 import productReviewsRouter from "./routes/productReviews.js";
 import usersRouter from "./routes/users.js";
@@ -37,6 +38,7 @@ app.use(cors(corsOptions));
 
 // API endpoints
 app.use("/api/ingredients", ingredientsRouter);
+app.use("/api/mappedIngredients", mappedIngredientsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/product-reviews", productReviewsRouter);
 app.use("/api/users", usersRouter);

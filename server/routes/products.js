@@ -1,15 +1,36 @@
 import express from "express";
-
 import mongoose from "mongoose";
 
-import { Product } from "../models.js";
+import { Product, IngredientMapped } from "../models.js";
 
 const router = express.Router();
 
 router
   .route("/")
-  .get((req, res) => {
-    res.json("All products list.");
+  .get(async (req, res) => {
+    const { concern, skinType, step, isSensitive } = req.query;
+
+    const products = await Product.find({
+      skinType: skinType,
+      step: step
+    }).lean();
+
+    const ingredients = await IngredientMapped.find().lean();
+    const ingredientsMap = new Map();
+
+    for (ingredient of ingredients) {
+      ingredientsMap.set(ingredient.name, { name: ingredient.name, rating: ingredient.rating, purpose: ingredient.purpose, description: ingredient.description });
+    }
+
+    for (let i = 0; i < products.length; i++) {
+      let currIngredients = products[i]["ingredients"];
+      
+      for (let j = 0; j < currIngredients.length; j++) {
+        currIngredients[j] = ingredientsMap.has(currIngredients[j]) ? ingredientsMap.get(currIngredients[j]) : {name: currIngredients[j], rating: "unknown", purpose: "unknown", description: "unknown" };
+      }
+    }
+
+    res.status(202).json(products);
   })
   .post(async (req, res) => {
     const {

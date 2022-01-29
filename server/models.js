@@ -193,10 +193,38 @@ const ingredientSchema = new mongoose.Schema({
   },
 });
 
+const mappedIngredientSchema = new mongoose.Schema(
+  {
+    _id: mongoose.Schema.Types.ObjectId,
+    name: {
+      type: String,
+      required: [true, "Name is required."],
+      minLength: [3, "Name must be at least 3 characters long."],
+      maxLength: [100, "Name must be less than 100 characters long."],
+    },
+    rating: {
+      type: Number,
+      required: [true, "Rating is required."],
+      validate: [isValidIngredientRating, "Rating must be 0-3."],
+    },
+    description: {
+      type: String,
+      minLength: [3, "Description must be at least 3 characters long."],
+      maxLength: [1000, "Description must be less than 1000 characters long."],
+    },
+    purpose: {
+      type: [String],
+      required: [true, "Purpose is required."],
+    },
+  },
+  { collection: "mappedIngredients" },
+);
+
 export const User = mongoose.model("User", userSchema);
 export const Product = mongoose.model("Product", productSchema);
 export const ProductReview = mongoose.model(
   "productReviews",
   productReviewSchema
 );
+export const IngredientMapped = mongoose.model("mappedIngredients", mappedIngredientSchema);
 export const Ingredient = mongoose.model("Ingredient", ingredientSchema);
