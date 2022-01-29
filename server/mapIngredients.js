@@ -24,6 +24,7 @@ const postIngredient = async (ingredient) => {
 
     const { name, rating, description, purpose } = ingredient;
 
+
     const isExists = await IngredientMapped.exists({
         name: ingredient.name,
     });
@@ -62,7 +63,7 @@ const findIngredient = (name, ingredients) => {
         }
     }
 
-    return optimalMatch || { name: name, rating: null, purpose: null, description: null };
+    return optimalMatch;
 }
 
 // add allIngredients then loop through then check if any simillarity, if so then add to db else nothing
