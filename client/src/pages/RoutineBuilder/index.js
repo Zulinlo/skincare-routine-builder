@@ -12,33 +12,57 @@ import "./styles.scss";
 const RoutineBuilder = () => {
   const [isRoutineDay, setIsRoutineDay] = useState(true);
   const [routineItems, setRoutineItems] = useState([]);
-  const [newItem, setNewItem] = useState(null);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [recommendations, setRecommendations] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [newItemState, setNewItemState] = useState(0);
   const { currentUser, logout } = useAuth();
+  const newItem = useRef(null);
+  const navigate = useNavigate();
 
   const toggleRoutine = () => {
     setIsRoutineDay(!isRoutineDay);
   };
 
   const initiateNewItem = () => {
-    setNewItem({});
+    newItem.current = {};
+    setNewItemState(1);
   };
 
   const nextNewItemStep = (e) => {
-    setNewItem({ step: e.target.innerHTML });
+    newItem.current = { step: e.target.innerHTML };
+    setNewItemState(2);
   };
 
   const nextNewItemConcern = (e) => {
     activeButtons.current[0] = concerns.indexOf(e.target.innerHTML);
-    setNewItem({ ...newItem, concern: e.target.innerHTML });
+    newItem.current = { ...newItem.current, concern: e.target.innerHTML };
+    setNewItemState(3);
+
+    if (Object.keys(newItem.current).length === 3)
+      getRecommendations();
   };
 
   const nextNewItemSkin = (e) => {
     activeButtons.current[1] = skinTypes.indexOf(e.target.innerHTML);
-    console.log(activeButtons);
-    setNewItem({ ...newItem, skinType: e.target.innerHTML });
+    newItem.current = { ...newItem.current, skinType: e.target.innerHTML };
+    setNewItemState(4);
+
+    if (Object.keys(newItem.current).length === 3)
+      getRecommendations();
   };
+
+  const getRecommendations = () => {
+    setIsLoading(true);
+
+    console.log(`http://localhost:8080/api/products?concern=${newItem.current.concern.toLowerCase()}&skinType=${newItem.current.skinType.toLowerCase()}&step=${newItem.current.step.toLowerCase()}&isSensitive=false`);
+    fetch(`http://localhost:8080/api/products?concern=${newItem.current.concern.toLowerCase()}&skinType=${newItem.current.skinType.toLowerCase()}&step=${newItem.current.step.toLowerCase()}&isSensitive=false`)
+      .then((res) => res.json())
+      .then((data) => {
+        setRecommendations(data.sort((a,b) => b.numberOfReviews - a.numberOfReviews));
+        setIsLoading(false);
+      })
+  }
 
   const getRoutineItems = (routineDay) => {
     return "hi";
@@ -54,7 +78,7 @@ const RoutineBuilder = () => {
 
   const steps = [
     "Cleanser",
-    "Oil Cleanser",
+    "Oil Cleanser", 
     "Toner",
     "Exfoliant",
     "Serum",
@@ -103,7 +127,7 @@ const RoutineBuilder = () => {
           Log out
         </Button>
       </nav>
-      {newItem !== null && Object.keys(newItem).length === 0 && (
+      {newItem.current !== null && Object.keys(newItem.current).length === 0 && (
         <div className="new-item">
           <h2>Pick a step</h2>
           {steps.map((v, i) => (
@@ -119,9 +143,9 @@ const RoutineBuilder = () => {
           ))}
         </div>
       )}
-      {newItem !== null &&
-        (Object.keys(newItem).length === 1 ||
-          Object.keys(newItem).length === 2) && (
+      {newItem.current !== null &&
+        (Object.keys(newItem.current).length === 1 ||
+          Object.keys(newItem.current).length === 2) && (
           <div className="new-item">
             <h2>Concern</h2>
             {concerns.map((v, i) => (
@@ -151,17 +175,29 @@ const RoutineBuilder = () => {
             ))}
           </div>
         )}
-      {newItem !== null && Object.keys(newItem).length > 2 && (
+      {newItem.current !== null && Object.keys(newItem.current).length > 2 && (
         <div className="new-item-reccomendations">
           <h1>Recommendations</h1>
+          {isLoading ? <h3>Is Loading...</h3> : ( recommendations.length === 0 ? <h2>No products</h2> : recommendations.map((v, i) => (
+            <div key={i} className="recommendation">
+              <img src={require(`../../utils/productImages/${v.imagePath}`)} />
+              <div className="recommendation__name">{v.name}</div>
+              <div className="recommendation__brand">{v.brand}</div>
+              <div className="recommendation__price">{v.price}</div>
+              <div className="recommendation__volume">{v.volume}</div>
+              <div className="recommendation__description">{v.description}</div>
+              <div className="recommendation__directions">{v.directions}</div>
+              <div className="recommendation__reviews">{v.averageReview} no. reviews: {v.numberOfReviews}</div>
+            </div>
+          )))}
         </div>
       )}
-      <section className={"routine" + (newItem ? " side" : "")}>
+      <section className={"routine" + (newItem.current ? " side" : "")}>
         <div className="routine-main">
           {routineItems.map((item, i) => {
             return <div key={i}>hi</div>;
           })}
-          {!newItem && (
+          {!newItem.current && (
             <div className="routine-main-add" onClick={initiateNewItem}>
               <BsPlus fill="#C4C4C4" />
             </div>

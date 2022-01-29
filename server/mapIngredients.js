@@ -26,9 +26,9 @@ const postIngredient = async (ingredient) => {
 
 
     const isExists = await IngredientMapped.exists({
-        name: ingredient.name,
+        name,
     });
-    if (isExists) return;
+    if (isExists) return console.log("Ingredient already exists!");
 
     const _id = new mongoose.Types.ObjectId();
     const newIngredient = new IngredientMapped({

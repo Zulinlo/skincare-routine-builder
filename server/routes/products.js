@@ -8,6 +8,9 @@ const router = express.Router();
 router
   .route("/")
   .get(async (req, res) => {
+    if (Object.keys(req.query).length === 0) {
+      return res.status(200).json(await IngredientMapped.find().lean());
+    }
     const { concern, skinType, step, isSensitive } = req.query;
 
     const products = await Product.find({
@@ -18,7 +21,7 @@ router
     const ingredients = await IngredientMapped.find().lean();
     const ingredientsMap = new Map();
 
-    for (ingredient of ingredients) {
+    for (let ingredient of ingredients) {
       ingredientsMap.set(ingredient.name, { name: ingredient.name, rating: ingredient.rating, purpose: ingredient.purpose, description: ingredient.description });
     }
 
@@ -26,7 +29,7 @@ router
       let currIngredients = products[i]["ingredients"];
       
       for (let j = 0; j < currIngredients.length; j++) {
-        currIngredients[j] = ingredientsMap.has(currIngredients[j]) ? ingredientsMap.get(currIngredients[j]) : {name: currIngredients[j], rating: "unknown", purpose: "unknown", description: "unknown" };
+        currIngredients[j] = ingredientsMap.has(currIngredients[j]) ? ingredientsMap.get(currIngredients[j]) : {name: currIngredients[j], rating: null, purpose: null, description: null };
       }
     }
 
@@ -79,7 +82,7 @@ router
       .save()
       .then((result) => {
         console.log(`Product added!\n${result}`);
-        return res.status(200).json({ _id, imagePath });
+        return res.status(202).json({ _id, imagePath });
       })
       .catch((err) => {
         console.log(`Failed to add product.\n${err}`);
