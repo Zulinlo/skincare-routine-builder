@@ -103,6 +103,7 @@
     -moz-user-select: none;
 
     > div {
+      position: relative;
       flex-shrink: 0;
       display: flex;
       align-items: center;
@@ -117,6 +118,22 @@
       &:hover {
         cursor: pointer;
         transform: scale(1.1);
+      }
+
+      img {
+        width: 100%;
+        object-fit: contain;
+        border-radius: 30%;
+      }
+
+      h2 {
+        position: absolute;
+        top: 0;
+        margin-top: -25%;
+        color: #133038;
+        font-size: 1.8rem;
+        font-weight: bold;
+        white-space: nowrap;
       }
     }
   }
@@ -160,7 +177,7 @@
   }
 }
 
-.new-item-reccomendations {
+.new-item-recommendations {
   position: absolute;
   left: 0;
   right: 0;
@@ -176,5 +193,66 @@
   flex-flow: column nowrap;
   align-items: center;
   padding: 2% 0;
-  font-size: 1.2rem;
+  font-size: 1rem;
+
+  .recommendation {
+    width: 80%;
+    height: 80%;
+    margin: 5%;
+    padding: 2rem;
+    background: #fff;
+    color: #181818;
+    display: flex;
+    flex-flow: row nowrap;
+    transition: 0.05s ease-in-out;
+
+    &:hover {
+      cursor: pointer;
+      transform: scale(1.02);
+    }
+
+    > div {
+      overflow-y: auto;
+      flex: 1;
+
+      div {
+        margin-top: 10px;
+      }
+    }
+
+    img {
+      object-fit: contain;
+      max-width: 40%;
+      height: auto;
+      flex: 2;
+    }
+
+    &__name {
+      font-size: 1.6rem;
+      font-weight: bold;
+    }
+
+    &__brand {
+      font-size: 1.2rem;
+    }
+
+    &__price {
+      margin-top: 20px !important;
+    }
+
+    &__ingredients {
+      margin-top: 50px !important;
+
+      > div {
+        margin-top: 20px !important;
+        p {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+}
+
+.routine-main-center {
+   justify-content: center;
 }
