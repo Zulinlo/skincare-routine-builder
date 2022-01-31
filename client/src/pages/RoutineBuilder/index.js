@@ -207,7 +207,7 @@ const RoutineBuilder = () => {
         )}
       {newItem.current !== null && Object.keys(newItem.current).length > 2 && (
         <div className="new-item-recommendations">
-          <h1>Recommendations</h1>
+          <h1>Product Recommendations</h1>
           {isLoading ? <h3>Is Loading...</h3> : ( recommendations.length === 0 ? <h2>No products</h2> : recommendations.map((v, i) => (
             <div key={v._id} className="recommendation" onClick={() => addRoutineItem(v._id, v.imagePath, v.step)}>
               <img src={require(`../../utils/productImages/${v.imagePath}`)} />
@@ -222,7 +222,7 @@ const RoutineBuilder = () => {
                 <div className="recommendation__ingredients"><b>Ingredient breakdown: </b>{v.ingredients.map((v, i) => (
                   <div key={i} title={ingredientRatings[v.rating] || "UNKNOWN"} style={{color: ingredientRatingsColor[v.rating]}}>
                     {v.name}
-                    <p>{v.purpose}</p>
+                    <p><i>{v.purpose}</i></p>
                   </div>
                 ))}</div>
               </div>
