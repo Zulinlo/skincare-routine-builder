@@ -7,23 +7,15 @@ const isAlphanumeric = (v) => v.match(/^[a-zA-Z0-9]+$/);
 /** Schemas with validation */
 const userSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  username: {
+  uuid: {
     type: String,
-    required: [true, "Username is required."],
-    minLength: [3, "Username must be at least 3 characters long."],
-    maxLength: [100, "Username must be less than 100 characters long."],
-    validate: [isAlphanumeric, "Username must be alphanumeric."],
-  },
-  password: {
-    type: String,
-    select: false,
-    required: [true, "Password is required."],
+    required: [true, "uuid is required."],
     minLength: [8, "Password must be at least 8 characters long."],
-    maxLength: [100, "Password must be less than 100 characters long."],
+    maxLength: [65, "Password must be less than 66 characters long."],
   },
   skinType: {
     type: String,
-    required: [true, "Skin type is required"],
+    required: [true, "Skin type is required."],
     enum: {
       values: ["normal", "dry", "oily", "combination"],
       message: "Skin type is not valid.",
@@ -31,10 +23,19 @@ const userSchema = new mongoose.Schema({
   },
   isSensitive: {
     type: Boolean,
-    required: true,
+    required: [true, "IsSensitive skin is required."],
   },
+  dayRoutine: {
+    type: Array,
+    required: [true, "Day Routine is required."]
+  },
+  nightRoutine: {
+    type: Array,
+    required: [true, "Night Routine is required."]
+  }
 });
 
+/* for password hashing but not needed due to firebase auth
 userSchema.pre("save", function (next) {
   var user = this;
 
@@ -51,6 +52,7 @@ userSchema.methods.comparePassword = function (candidatePassword, cb) {
     cb(null, isMatch);
   });
 };
+*/
 
 const productSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,

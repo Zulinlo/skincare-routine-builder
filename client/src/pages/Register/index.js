@@ -19,6 +19,13 @@ const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const getStepRecommendation = async (step) => {
+    const response = await fetch(`http://localhost:8080/api/products?concern=null&skinType=${skinType}&step=${step}&isSensitive=${isSensitive}`);
+    const payload = await response.json();
+    const res = payload[0];
+    return res ? { productId: res._id, imagePath: res.imagePath, step } : null;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,14 +33,48 @@ const Register = () => {
       return setError("Passwords do not match");
     }
 
-    try {
-      setError("");
-      setLoading(true);
-      await register(email, password);
-      return navigate("/routine-builder");
-    } catch {
-      setError("Failed to create an account");
-    }
+    setError("");
+    setLoading(true);
+    register(email, password)
+      .then(async (data) => {
+        let uuid = data.user.uid;
+        const dayRoutine = [];
+        const nightRoutine = [];
+        let cleanser = await getStepRecommendation("cleanser");
+        let oilCleanser = await getStepRecommendation("oilCleanser");
+        let toner = await getStepRecommendation("toner");
+        let exfoliant = await getStepRecommendation("exfoliant");
+        let serum = await getStepRecommendation("serumEssence");
+        let moisturiser = await getStepRecommendation("moisturiser");
+        let sunscreen = await getStepRecommendation("sunscreen");
+
+        if (startingTemplate === "simple") {
+          dayRoutine.push(cleanser, moisturiser, sunscreen);
+          nightRoutine.push(cleanser, oilCleanser, moisturiser);
+        } else {
+          dayRoutine.push(cleanser, toner, serum, moisturiser, sunscreen);
+          nightRoutine.push(cleanser, oilCleanser, toner, exfoliant, serum, moisturiser);
+        }
+
+        dayRoutine.filter(v => v); // filter null
+        nightRoutine.filter(v => v ); // filter null
+
+        await fetch(`http://localhost:8080/api/users`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json"},
+          body: JSON.stringify({
+            uuid,
+            skinType,
+            isSensitive: isSensitive === "yes",
+            dayRoutine,
+            nightRoutine
+          })
+        });
+
+        setError("Account successfully created.");
+        return navigate("/routine-builder");
+      })
+      .catch((err) => setError(`Failed to create an account. ${err}`));
 
     setLoading(false);
   }

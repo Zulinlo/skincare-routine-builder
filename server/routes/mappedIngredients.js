@@ -1,5 +1,4 @@
 import express from "express";
-
 import mongoose from "mongoose";
 
 import { IngredientMapped } from "../models.js";

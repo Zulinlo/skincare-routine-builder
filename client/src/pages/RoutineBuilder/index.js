@@ -21,7 +21,7 @@ const RoutineBuilder = () => {
   const navigate = useNavigate();
 
   const toggleRoutine = () => {
-    setIsRoutineDay(!isRoutineDay);
+    setIsRoutineDay(preState => !preState);
   };
 
   const initiateNewItem = () => {
@@ -85,13 +85,17 @@ const RoutineBuilder = () => {
     activeButtons.current = [null, null];
   }
 
-  const getRoutineItems = (routineDay) => {
-    return;
+  const getRoutineItems = () => {
+    fetch(`http://localhost:8080/api/users/${currentUser.uid}?isRoutineDay=${isRoutineDay}`)
+      .then(response => response.json())
+      .then(data => {
+        setRoutineItems(data)
+      })
+      .catch(err => console.error(err));
   };
 
   useEffect(() => {
     getRoutineItems();
-    setRoutineItems(getRoutineItems());
   }, [isRoutineDay]);
 
   const steps = [

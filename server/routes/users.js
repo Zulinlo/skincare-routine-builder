@@ -1,5 +1,4 @@
-import express from "express";
-
+import express from "express"
 import mongoose from "mongoose";
 
 import { User } from "../models.js";
@@ -9,21 +8,22 @@ const router = express.Router();
 router
   .route("/")
   .get((req, res) => {
-    res.json("All users list");
+    return res.json("All users list");
   })
   .post(async (req, res) => {
-    const { username, password, skinType, isSensitive = false } = req.body;
+    const { uuid, skinType, isSensitive = false, dayRoutine, nightRoutine } = req.body;
 
-    const userExists = await User.exists({ username });
-    if (userExists) return res.status(400).json(`Username is already taken`);
+    const userExists = await User.exists({ uuid });
+    if (userExists) return res.status(400).json(`Uuid is already taken.`);
 
     const _id = new mongoose.Types.ObjectId();
     const newUser = new User({
       _id,
-      username,
-      password,
+      uuid,
       skinType,
       isSensitive,
+      dayRoutine, 
+      nightRoutine
     });
 
     newUser
@@ -36,6 +36,19 @@ router
         console.log(`Failed user creation\n${err}`);
         return res.status(400).json(err.message.slice(24).split(", "));
       });
+  })
+  
+router
+  .route("/:uuid")
+  .get(async (req, res) => {
+    if (req.query.isRoutineDay === null)
+      return res.status(400).json("Day or night routine needs to be specified.");
+
+    const user = await User.findOne({ uuid: req.params.uuid }).lean();
+    if (!user)
+      return res.status(400).json("User does not exist.");
+
+    return req.query.isRoutineDay === "true" ? res.status(200).json(user.dayRoutine) : res.status(200).json(user.nightRoutine);
   });
 
 export default router;
