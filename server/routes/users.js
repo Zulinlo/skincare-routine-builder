@@ -49,6 +49,15 @@ router
       return res.status(400).json("User does not exist.");
 
     return req.query.isRoutineDay === "true" ? res.status(200).json(user.dayRoutine) : res.status(200).json(user.nightRoutine);
+  }).put(async (req, res) => {
+    try {
+      const { isRoutineDay, routine } = req.body;
+      const update = { ...(isRoutineDay ? { dayRoutine: routine } : { nightRoutine: routine }) };
+      await User.updateOne({ uuid: req.params.uuid }, update);
+      return res.status(200).json();
+    } catch (err) {
+      console.error(err);
+    }
   });
 
 export default router;

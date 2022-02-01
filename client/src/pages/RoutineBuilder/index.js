@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import { BsPlus } from "react-icons/bs";
-import { AiFillCaretRight } from "react-icons/ai";
+import { AiFillCaretRight, AiFillCloseCircle } from "react-icons/ai";
 
 import { ReactComponent as Logo } from "utils/favicon.svg";
 import { useAuth } from "contexts/AuthContext";
@@ -16,6 +17,7 @@ const RoutineBuilder = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [newItemState, setNewItemState] = useState(0);
+  const [showDeleteItem, setShowDeleteItem] = useState(null)
   const { currentUser, logout } = useAuth();
   const newItem = useRef(null);
   const navigate = useNavigate();
@@ -78,11 +80,42 @@ const RoutineBuilder = () => {
       })
   }
 
+  const updateRoutine = (routine) => {
+    fetch(`http://localhost:8080/api/users/${currentUser.uid}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        isRoutineDay,
+        routine
+      })
+    }) 
+    .catch((err) => console.error(err));
+  }
+
   const addRoutineItem = (productId, imagePath, step) => {
     let res = {productId, imagePath, step}
-    setRoutineItems((prevState) => prevState ? [...prevState, res] : [res]);
+    const newRoutine = [...routineItems, res];
+    setRoutineItems(newRoutine);
     newItem.current = null;
     activeButtons.current = [null, null];
+    updateRoutine(newRoutine);
+  }
+
+  const deleteRoutineItem = (routineIdx) => {
+    const newRoutine = routineItems.filter((item, i) => i !== routineIdx);
+    setRoutineItems(newRoutine);
+    updateRoutine(newRoutine);
+  }
+
+  const onDragEnd = (result) => {
+    if (!result.destination)
+      return;
+
+    const newRoutine = [...routineItems];
+    const [removed] = newRoutine.splice(result.source.index, 1);
+    newRoutine.splice(result.destination.index, 0, removed);
+    setRoutineItems(newRoutine);
+    updateRoutine(newRoutine);
   }
 
   const getRoutineItems = () => {
@@ -234,33 +267,61 @@ const RoutineBuilder = () => {
           )))}
         </div>
       )}
-      <section className={"routine" + (newItem.current ? " side" : "")}>
-        <div className={`routine-main ${!routineItems ? "routine-main-center" : ""}`}>
-          {routineItems && routineItems.map((item) => (
-            <div key={item.productId}>
-              <h2>
-                {(() => {
-                  let res = item.step.charAt(0).toUpperCase() + item.step.slice(1);
-                  switch (res) {
-                    case "OilCleanser":
-                      return "Oil Cleanser";
-                    
-                    case "SerumEssence":
-                      return "Serum";
-                  }
-                  return res;
-                })()}
-              </h2>
-              <img src={require(`../../utils/productImages/${item.imagePath}`)} />
-            </div>
-          ))}
-          {!newItem.current && (
-            <div className="routine-main-add" onClick={initiateNewItem}>
-              <BsPlus fill="#C4C4C4" />
-            </div>
-          )}
-        </div>
-      </section>
+        <section className={"routine" + (newItem.current ? " side" : "")}>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable direction="horizontal" droppableId="droppable">
+              {(provided, snapshot) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className={`routine-main ${!routineItems ? "routine-main-center" : ""}`}
+                >
+                  {routineItems && routineItems.map((item, i) => (
+                    <Draggable 
+                      key={item.productId}
+                      draggableId={item.productId}
+                      index={i}
+                      onMouseEnter={() => setShowDeleteItem(item.productId)}
+                      onMouseLeave={() => setShowDeleteItem(null)}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className="routine-main-scroll"
+                        >
+                          <div className="routine-main-delete" style={showDeleteItem === item.productId ? { "display": "flex" } : { "display": "none"}} onClick={() => deleteRoutineItem(i)}>
+                            <AiFillCloseCircle fill="red" style={{ "background": "black", "borderRadius": "50%", "width": "100%", "height": "100%" }} />
+                          </div>
+                          <h2>
+                            {(() => {
+                              let res = item.step.charAt(0).toUpperCase() + item.step.slice(1);
+                              switch (res) {
+                                case "OilCleanser":
+                                  return "Oil Cleanser";
+                                
+                                case "SerumEssence":
+                                  return "Serum";
+                              }
+                              return res;
+                            })()}
+                          </h2>
+                          <img src={require(`../../utils/productImages/${item.imagePath}`)} />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {!newItem.current && (
+                    <div className="routine-main-add" onClick={initiateNewItem}>
+                      <BsPlus fill="#C4C4C4" />
+                    </div>
+                  )}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </section>
     </div>
   );
 };

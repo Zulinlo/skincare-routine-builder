@@ -103,7 +103,7 @@
     -webkit-user-select: none;
     -moz-user-select: none;
 
-    > div {
+    .routine-main-scroll {
       position: relative;
       flex-shrink: 0;
       display: flex;
@@ -115,11 +115,6 @@
       border-radius: 30%;
       margin: 30px;
       transition: .125s ease-in;
-
-      &:hover {
-        cursor: pointer;
-        transform: scale(1.1);
-      }
 
       img {
         width: 100%;
@@ -136,6 +131,32 @@
         font-weight: bold;
         white-space: nowrap;
       }
+
+      .routine-main-delete {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 2rem;
+        width: 2rem;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+    }
+
+    .routine-main-add {
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+      width: 10rem;
+      height: 10rem;
+      border-radius: 30%;
+      margin: 30px;
+      transition: .125s ease-in;
+      cursor: pointer;
     }
   }
 }
